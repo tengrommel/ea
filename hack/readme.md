@@ -45,3 +45,18 @@ while allowing access to others.
 
 In some cases, you can circumvent these restrictions by using an intermediary system to proxy the 
 connection around or through a firewall, a technique known as port forwarding.
+
+Many enterprise networks restrict internal assets from establishing HTTP connections to malicious sites.
+
+A client connects, through a firewall, to the destination host stacktitan.com. This host is configured to 
+forward connections to the host evil.com.
+
+You can use port forwarding to exploit several restrictive network configurations. 
+
+## WRITING A TCP SCANNER
+> One effective way to conceptualize the interaction of TCP ports is by implementing a port scanner.
+By writing one, you'll observe the steps that occur in a TCP handshake, along with the effects of encountered 
+state changes, which allow you to determine whether a TCP port is available or filtered state.
+
+Once you've written a basic scanner, you'll write one that's faster.
+
