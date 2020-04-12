@@ -60,3 +60,4 @@ state changes, which allow you to determine whether a TCP port is available or f
 
 Once you've written a basic scanner, you'll write one that's faster.
 
+    hack/dial
