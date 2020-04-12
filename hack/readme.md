@@ -66,3 +66,7 @@ Performing Concurrent Scanning
     
     hack/scan-too-fast
 
+Port Scanning Using a Worker Pool
+> To avoid inconsistencies, you'll use a pool of goroutines to manage the concurrent work being preformed.
+
+    hack/workerpool
