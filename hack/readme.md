@@ -70,3 +70,11 @@ Port Scanning Using a Worker Pool
 > To avoid inconsistencies, you'll use a pool of goroutines to manage the concurrent work being preformed.
 
     hack/workerpool
+
+## BUILDING A TCP PROXY
+> YOU can achieve all TCP-based communications by using Go's built-in net package
+
+- Using io.Reader and io.Writer
+
+
+
