@@ -76,5 +76,13 @@ Port Scanning Using a Worker Pool
 
 - Using io.Reader and io.Writer
 
+## Creating the Echo Server
+> As is customary for most languages, you'll start by building an echo server to learn 
+how to read and write data to and from a socket.
 
+This makes sense logically, as TCP connections are bidirectional and can be used to send(write) 
+or receive(read) data.
+
+After creating an instance of Conn, you'll be able to send and receive data over a TCP 
+socket.
 
