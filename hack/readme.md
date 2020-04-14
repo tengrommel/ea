@@ -94,4 +94,8 @@ or host.
 As mentioned earlier in this chapter, this is useful for trying to circumvent restrictive 
 egress controls or to leverage a system to bypass network segmentation.
 
-
+## Replicating Netcat for Command Execution
+> Netcat is the TCP/IP Swiss Army knife --- essentially, a more flexible, scriptable version 
+of Telnet. It contains a feature that allows stdin and stdout of any arbitrary program to be 
+redirected over TCP, enabling an attacker to, for example, turn a single command execution 
+vulnerability into operating system shell access.
