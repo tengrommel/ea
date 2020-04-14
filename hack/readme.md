@@ -86,3 +86,12 @@ or receive(read) data.
 After creating an instance of Conn, you'll be able to send and receive data over a TCP 
 socket.
 
+## Proxying a TCP Client
+> Now that you have a solid foundation, you can take what you've learned up to this point 
+and create a simple port forwarder to proxy a connection through an intermediary service 
+or host.
+
+As mentioned earlier in this chapter, this is useful for trying to circumvent restrictive 
+egress controls or to leverage a system to bypass network segmentation.
+
+
