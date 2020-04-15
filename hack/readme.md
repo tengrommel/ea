@@ -99,3 +99,5 @@ egress controls or to leverage a system to bypass network segmentation.
 of Telnet. It contains a feature that allows stdin and stdout of any arbitrary program to be 
 redirected over TCP, enabling an attacker to, for example, turn a single command execution 
 vulnerability into operating system shell access.
+
+# HTTP CLIENTS AND REMOTE INTERACTION WITH TOOLS
