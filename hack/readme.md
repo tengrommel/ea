@@ -100,4 +100,25 @@ of Telnet. It contains a feature that allows stdin and stdout of any arbitrary p
 redirected over TCP, enabling an attacker to, for example, turn a single command execution 
 vulnerability into operating system shell access.
 
-# HTTP CLIENTS AND REMOTE INTERACTION WITH TOOLS
+# HTTP C LIENTS AND REMOTE INTERACTION WITH TOOLS
+- It will first introduce you to the basics of building and customizing HTTP requests and 
+receiving their responses
+
+- Then you'll learn how to parse structured response data so the client can interrogate the information
+the information to determine actionable or relevant data
+
+- Finally, you'll learn how to apply these fundamentals by building HTTP clients that interact with a 
+variety of security tools and resources
+
+## HTTP FUNDAMENTALS WITH GO
+- First, HTTP is a stateless protocol: the server doesn't inherently maintain state and status for 
+each request. Instead, state is tracked through a variety of means, which may include session identifiers, 
+cookies, HTTP headers, and more.
+
+- Second, communications between clients and servers can occur either synchronously or asynchronously, but 
+they operate on a request/response cycle.
+
+- Finally, Go contains convenience functions so you can quickly and easily build and send HTTP requests 
+to a server and subsequently retrieve and process the response.
+
+## Calling HTTP APIs
