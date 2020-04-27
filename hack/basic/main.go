@@ -36,4 +36,29 @@ func main() {
 		"application/x-www-form-urlencoded",
 		strings.NewReader(form.Encode()))
 	defer r3.Body.Close()
+
+	// Generating a Request
+	req, err := http.NewRequest("DELETE", "https://www.google.com/robots.txt", nil)
+	var client http.Client
+	resp, err = client.Do(req)
+	// Read response body and close
+	req, err = http.NewRequest("PUT", "https://www.google.com/robots.txt",
+		strings.NewReader(form.Encode()))
+	resp, err = client.Do(req)
+	if err != nil {
+		log.Panicln(err)
+	}
+	fmt.Println(resp.Status)
+	body, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Panicln(err)
+	}
+	// Print HTTP Status
+	fmt.Println(resp.Status)
+	body, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Panicln(err)
+	}
+	fmt.Println(string(body))
+	resp.Body.Close()
 }

@@ -122,3 +122,11 @@ they operate on a request/response cycle.
 to a server and subsequently retrieve and process the response.
 
 ## Calling HTTP APIs
+> Let's begin the HTTP discussion by examining basic requests
+
+Each function takes---as a parameter---the URL as a string value and uses it for the 
+request's destination.
+
+## Using Structured Response Parsing
+> It uses the ioutil.ReadAll() function to read data from the response body, does some error 
+checking, and prints the HTTP status code and response body to stdout.
