@@ -130,3 +130,7 @@ request's destination.
 ## Using Structured Response Parsing
 > It uses the ioutil.ReadAll() function to read data from the response body, does some error 
 checking, and prints the HTTP status code and response body to stdout.
+
+## Building a http client that interacts with shodan
+> Prior to performing any authorized adversarial activities against an organization, any good 
+attacker begins with reconnaissance
