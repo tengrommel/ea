@@ -134,3 +134,12 @@ checking, and prints the HTTP status code and response body to stdout.
 ## Building a http client that interacts with shodan
 > Prior to performing any authorized adversarial activities against an organization, any good 
 attacker begins with reconnaissance
+
+Typically, this organization, any good attacker begins with reconnaissance.
+
+if the error message disclose the enterprise username format, and if the organization uses single-factor 
+authentication for its VPN, those error messages could increase the likelihook of an internal network 
+compromise through password-guessing attacks.
+
+Designing the Project Structure
+> When building an API client, you should structure it so that the function calls and logic stand alone
