@@ -6,7 +6,7 @@ import (
 
 /**
 Given a string, find the length of the longest substringwithout repeating characters.
-
+通过slice简化map操作，利用快慢指针解决问题
 */
 
 func lengthOfLongestSubstring(s string) int {
