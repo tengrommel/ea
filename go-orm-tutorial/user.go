@@ -18,7 +18,7 @@ type User struct {
 }
 
 func InitialMigration() {
-	db, err := gorm.Open("sqlite3", "test.db")
+	db, err := gorm.Open("sqlite3", "test.db") // 这种方式是错误的
 	if err != nil {
 		fmt.Println(err.Error())
 		panic("Failed to connect to database")
