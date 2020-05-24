@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/gin-gonic/gin v1.6.2
 	github.com/golang/protobuf v1.3.5 // indirect
+	github.com/googollee/go-socket.io v1.4.3 // indirect
 	github.com/gorilla/mux v1.7.4
 	github.com/jinzhu/gorm v1.9.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
