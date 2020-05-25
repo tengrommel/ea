@@ -1,0 +1,30 @@
+package main
+
+import (
+	"fmt"
+	"github.com/gorhill/cronexpr"
+	"time"
+)
+
+func main() {
+	var (
+		expr *cronexpr.Expression
+		err  error
+	)
+	if expr, err = cronexpr.Parse("* * * * *"); err != nil {
+		fmt.Println(err)
+		return
+	}
+	if expr, err = cronexpr.Parse("*/5 * * * *"); err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(expr)
+
+	now := time.Now()
+	nextTime := expr.Next(now)
+	time.AfterFunc(nextTime.Sub(now), func() {
+		fmt.Println("被调度了")
+	})
+	time.Sleep(10 * time.Second)
+}
