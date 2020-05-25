@@ -3,7 +3,11 @@
  equivalents, and the matrix and vector computations in Go.
 
 # Introduction to Performance in Go
+>This book is written with intermediate to advanced Go developers in mind. 
 
+These developers will be looking to squeeze more performance out of their Go application. 
+
+If we can reduce latency and errors, as well as increase traffic whilst reducing saturation, our programs will continue to be more performant. Following the ideology of the four golden signals is beneficial for anyone developing a Go application with performance in mind.
 
 
 # Data Structures and Algorithms
