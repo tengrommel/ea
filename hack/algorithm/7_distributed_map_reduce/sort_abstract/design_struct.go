@@ -57,15 +57,30 @@ func (qData *QuickSortData) QuickSort() {
 }
 
 func main() {
+	type QQ struct {
+		password string
+		time     int
+	}
 	mydata := new(QuickSortData)
-	mydata.Data = []interface{}{1, 9, 2, 8, 3, 7, 4, 6, 5}
+	mydata.Data = []interface{}{QQ{"addfds", 1}, QQ{"cddfds", 2}, QQ{"bddfds", 2}}
 	mydata.IsIncreasing = true
 	mydata.myFunc = func(data1, data2 interface{}, isIncreasing bool) bool {
 		if isIncreasing {
-			return data1.(int) < data2.(int)
+			return data1.(QQ).time < data2.(QQ).time
 		} else {
-			return data1.(int) > data2.(int)
+			return data1.(QQ).time > data2.(QQ).time
 		}
 	}
 	mydata.QuickSort()
+	//mydata := new(QuickSortData)
+	//mydata.Data = []interface{}{1, 9, 2, 8, 3, 7, 4, 6, 5}
+	//mydata.IsIncreasing = true
+	//mydata.myFunc = func(data1, data2 interface{}, isIncreasing bool) bool {
+	//	if isIncreasing {
+	//		return data1.(int) < data2.(int)
+	//	} else {
+	//		return data1.(int) > data2.(int)
+	//	}
+	//}
+	//mydata.QuickSort()
 }
