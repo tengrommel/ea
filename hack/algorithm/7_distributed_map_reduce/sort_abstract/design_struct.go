@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"sync"
+)
 
 func FindindexMid(list []interface{}, start int, end int, cur int,
 	myFunc func(data1, data2 interface{}, isIncreasing bool) bool, isIncreasing bool) int {
@@ -44,16 +48,74 @@ type QuickSortData struct {
 
 func (qData *QuickSortData) QuickSort() {
 	fmt.Println("原始数据", qData.Data)
-	if len(qData.Data) < 20 {
-		fmt.Println("插入排序")
+	if len(qData.Data) < 2 {
 		// 插入排序
 		BinSearchSort(qData.Data, qData.myFunc, qData.IsIncreasing)
 	} else {
 		// 快速排序
-
+		QuickSort(qData.Data, 0, len(qData.Data)-1, qData.myFunc, qData.IsIncreasing)
 	}
 
 	fmt.Println("最终数据", qData.Data)
+}
+
+func BinSearchSortIndex(myList []interface{}, start int, end int, myFunc func(data1, data2 interface{},
+	isIncreasing bool) bool, isIncreasing bool) []interface{} {
+	if end-start <= 1 {
+		return myList
+	} else {
+		for i := start + 1; i <= end; i++ {
+			p := FindindexMid(myList, start, i-1, i, myFunc, isIncreasing)
+			if p != i {
+				for j := i; j > p; j-- {
+					myList[j], myList[j-1] = myList[j-1], myList[j]
+				}
+			}
+		}
+		return myList
+	}
+}
+
+func Swap(arr []interface{}, i, j int) {
+	arr[i], arr[j] = arr[j], arr[i]
+}
+
+func QuickSort(arr []interface{}, left, right int,
+	myFunc func(data1, data2 interface{}, isIncreasing bool) bool,
+	isIncreasing bool) {
+	if right-left < 10 {
+		BinSearchSortIndex(arr, left, right, myFunc, isIncreasing)
+	} else {
+		Swap(arr, left, rand.Int()%(right-left)+left)
+		vData := arr[left]
+		It := left
+		gt := right + 1
+		i := left + 1
+		for i < gt {
+			if myFunc(arr[i], vData, isIncreasing) {
+				Swap(arr, i, It+1)
+				It++
+				i++
+			} else if myFunc(arr[i], vData, !isIncreasing) {
+				Swap(arr, i, gt-1)
+				gt--
+			} else {
+				i++
+			}
+		}
+		Swap(arr, left, It)
+		var wg sync.WaitGroup
+		wg.Add(2)
+		go func() {
+			QuickSort(arr, left, It-1, myFunc, isIncreasing)
+			wg.Done()
+		}()
+		go func() {
+			QuickSort(arr, gt, right, myFunc, isIncreasing)
+			wg.Done()
+		}()
+		wg.Wait()
+	}
 }
 
 func main() {
