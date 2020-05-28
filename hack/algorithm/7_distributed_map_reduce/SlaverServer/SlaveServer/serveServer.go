@@ -119,10 +119,10 @@ func Server(conn net.Conn) {
 				}
 				fmt.Println(fileStorePath)
 				saveFile, _ := os.Create(fileStorePath)
+				// 开始
 				var save *bufio.Writer
+				save = bufio.NewWriter(saveFile)
 				if data2 == 0 && data3 == 0 {
-					// 开始
-					save = bufio.NewWriter(saveFile)
 				}
 				if data2 == 1 {
 					// 整数
@@ -389,33 +389,37 @@ func DiskFileSortAndSend(filePath string, myType int, isIncreasing bool, conn ne
 			data, _ := strconv.Atoi(string(line))
 			//arr = append(arr, data)
 			for i := 0; i < len(myData.Data); i++ {
-				conn.Write(ByteCode.IntToBytes(1))
-				conn.Write(ByteCode.IntToBytes(1))
-				conn.Write(ByteCode.IntToBytes(data))
+				myByteData := ByteCode.IntToBytes(1)
+				myByteData = append(myByteData, ByteCode.IntToBytes(1)...)
+				myByteData = append(myByteData, ByteCode.IntToBytes(data)...)
+				conn.Write(myByteData)
 			}
 		} else if myType == 2 {
 			data, _ := strconv.ParseFloat(string(line), 64)
 			//arr = append(arr, data)
 			for i := 0; i < len(myData.Data); i++ {
-				conn.Write(ByteCode.IntToBytes(1))
-				conn.Write(ByteCode.IntToBytes(2))
-				conn.Write(ByteCode.Float64ToByte(data))
+				myByteData := ByteCode.IntToBytes(1)
+				myByteData = append(myByteData, ByteCode.IntToBytes(2)...)
+				myByteData = append(myByteData, ByteCode.Float64ToByte(data)...)
+				conn.Write(myByteData)
 			}
 		} else if myType == 3 {
-			conn.Write(ByteCode.IntToBytes(1))
-			conn.Write(ByteCode.IntToBytes(3))
-			conn.Write(ByteCode.IntToBytes(len(string(line))))
-			conn.Write(line)
+			myByteData := ByteCode.IntToBytes(1)
+			myByteData = append(myByteData, ByteCode.IntToBytes(3)...)
+			myByteData = append(myByteData, ByteCode.IntToBytes(len(string(line)))...)
+			myByteData = append(myByteData, line...)
+			conn.Write(myByteData)
 		} else if myType == 4 {
 			data := string(line)
 			dataList := strings.Split(data, " # ")
 			password := dataList[0]
 			times, _ := strconv.Atoi(dataList[1])
-			conn.Write(ByteCode.IntToBytes(1))
-			conn.Write(ByteCode.IntToBytes(4))
-			conn.Write(ByteCode.IntToBytes(times))
-			conn.Write(ByteCode.IntToBytes(len(password)))
-			conn.Write([]byte(password))
+			myByteData := ByteCode.IntToBytes(1)
+			myByteData = append(myByteData, ByteCode.IntToBytes(4)...)
+			myByteData = append(myByteData, ByteCode.IntToBytes(times)...)
+			myByteData = append(myByteData, ByteCode.IntToBytes(len(password))...)
+			myByteData = append(myByteData, []byte(password)...)
+			conn.Write(myByteData)
 		}
 	}
 	fileSort.Close()
