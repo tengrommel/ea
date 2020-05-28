@@ -186,10 +186,10 @@ func SendResult(myData *sort.QuickSortData, conn net.Conn, myType int, isIncreas
 		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
 		conn.Write(myStringStart)
 		for i := 0; i < len(myData.Data); i++ {
-			conn.Write(ByteCode.IntToBytes(0))
-			myBytesData := ByteCode.IntToBytes(1)
+			myBytesData := ByteCode.IntToBytes(0)
+			myBytesData = append(myBytesData, ByteCode.IntToBytes(1)...)
+			myBytesData = append(myBytesData, ByteCode.IntToBytes(myData.Data[i].(int))...)
 			conn.Write(myBytesData)
-			conn.Write(ByteCode.IntToBytes(myData.Data[i].(int)))
 		}
 		// 结束
 		myBytesEnd := ByteCode.IntToBytes(0)
@@ -207,10 +207,10 @@ func SendResult(myData *sort.QuickSortData, conn net.Conn, myType int, isIncreas
 		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
 		conn.Write(myStringStart)
 		for i := 0; i < len(myData.Data); i++ {
-			conn.Write(ByteCode.IntToBytes(0))
-			myBytesData := ByteCode.IntToBytes(2)
+			myBytesData := ByteCode.IntToBytes(0)
+			myBytesData = append(myBytesData, ByteCode.IntToBytes(2)...)
+			myBytesData = append(myBytesData, ByteCode.Float64ToByte(myData.Data[i].(float64))...)
 			conn.Write(myBytesData)
-			conn.Write(ByteCode.Float64ToByte(myData.Data[i].(float64)))
 		}
 		// 结束
 		myBytesEnd := ByteCode.IntToBytes(0)
@@ -229,11 +229,11 @@ func SendResult(myData *sort.QuickSortData, conn net.Conn, myType int, isIncreas
 		conn.Write(myStringStart)
 
 		for i := 0; i < len(myData.Data); i++ {
-			conn.Write(ByteCode.IntToBytes(0))
-			myBytesData := ByteCode.IntToBytes(3)
+			myBytesData := ByteCode.IntToBytes(0)
+			myBytesData = append(myBytesData, ByteCode.IntToBytes(3)...)
 			myBytesData = append(myBytesData, ByteCode.IntToBytes(len(myData.Data[i].(string)))...)
+			myBytesData = append(myBytesData, []byte(myData.Data[i].(string))...)
 			conn.Write(myBytesData)
-			conn.Write([]byte(myData.Data[i].(string)))
 		}
 		// 结束
 		myBytesEnd := ByteCode.IntToBytes(0)
@@ -252,12 +252,12 @@ func SendResult(myData *sort.QuickSortData, conn net.Conn, myType int, isIncreas
 		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
 		conn.Write(myStringStart)
 		for i := 0; i < len(myData.Data); i++ {
-			conn.Write(ByteCode.IntToBytes(0))
-			myBytesData := ByteCode.IntToBytes(4)
+			myBytesData := ByteCode.IntToBytes(0)
+			myBytesData = append(myBytesData, ByteCode.IntToBytes(4)...)
 			myBytesData = append(myBytesData, ByteCode.IntToBytes(myData.Data[i].(Pass).times)...)
 			myBytesData = append(myBytesData, ByteCode.IntToBytes(len(myData.Data[i].(Pass).PassWord))...)
+			myBytesData = append(myBytesData, []byte(myData.Data[i].(Pass).PassWord)...)
 			conn.Write(myBytesData)
-			conn.Write([]byte(myData.Data[i].(Pass).PassWord))
 		}
 		// 结束
 		myBytesEnd := ByteCode.IntToBytes(0)
