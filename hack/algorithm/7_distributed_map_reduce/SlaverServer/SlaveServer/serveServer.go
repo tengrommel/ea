@@ -311,301 +311,125 @@ func QuickSortDataByType(myData *sort.QuickSortData, myType int) {
 }
 
 func DiskFileSortAndSend(filePath string, myType int, isIncreasing bool, conn net.Conn) {
-	if myType == 1 {
-		arr := make([]interface{}, 0)
-		fi, err := os.Open(filePath)
-		defer fi.Close()
-		if err != nil {
-			fmt.Println(err)
-			return
+	arr := make([]interface{}, 0)
+	fi, err := os.Open(filePath)
+	defer fi.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	br := bufio.NewReader(fi)
+	for {
+		line, _, err := br.ReadLine()
+		if err == io.EOF {
+			break
 		}
-		br := bufio.NewReader(fi)
-		for {
-			line, _, err := br.ReadLine()
-			if err == io.EOF {
-				break
-			}
+		if myType == 1 {
 			data, _ := strconv.Atoi(string(line))
 			arr = append(arr, data)
-		}
-		// 排序
-		myData := new(sort.QuickSortData)
-		myData.IsIncreasing = true
-		myData.Data = arr
-		QuickSortDataByType(myData, myType)
-		myData.QuickSort()
-		fmt.Println("最终数组", arr)
-		newPath := strings.Replace(filePath, ".txt", "sort.txt", -1)
-		saveFile, _ := os.Create(newPath)
-		save := bufio.NewWriter(saveFile)
-		for i := 0; i < len(myData.Data); i++ {
-			fmt.Fprintln(save, strconv.Itoa(myData.Data[i].(int)))
-		}
-		save.Flush()
-		saveFile.Close()
-		arr = nil
-		runtime.GC()
-		debug.FreeOSMemory()
-		// 发送
-		// 整数
-		myStringStart := ByteCode.IntToBytes(1)
-		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
-		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
-		conn.Write(myStringStart)
 
-		fileSort, err := os.Open(newPath)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		brSort := bufio.NewReader(fileSort)
-		for {
-			line, _, err := brSort.ReadLine()
-			if err == io.EOF {
-				break
-			}
-			data, _ := strconv.Atoi(string(line))
-			//arr = append(arr, data)
-			for i := 0; i < len(myData.Data); i++ {
-				conn.Write(ByteCode.IntToBytes(0))
-				myBytesData := ByteCode.IntToBytes(1)
-				conn.Write(myBytesData)
-				conn.Write(ByteCode.IntToBytes(data))
-			}
-		}
-		fileSort.Close()
-		// 结束
-		myBytesEnd := ByteCode.IntToBytes(0)
-		myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(0)...)
-		if isIncreasing {
-			myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(1)...)
-		} else {
-			myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(2)...)
-		}
-		conn.Write(myBytesEnd)
-	} else if myType == 2 {
-		arr := make([]interface{}, 0)
-		fi, err := os.Open(filePath)
-		defer fi.Close()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		br := bufio.NewReader(fi)
-		for {
-			line, _, err := br.ReadLine()
-			if err == io.EOF {
-				break
-			}
+		} else if myType == 2 {
 			data, _ := strconv.ParseFloat(string(line), 64)
 			arr = append(arr, data)
-		}
-		// 排序
-		myData := new(sort.QuickSortData)
-		myData.IsIncreasing = true
-		myData.Data = arr
-		QuickSortDataByType(myData, myType)
-		myData.QuickSort()
-		fmt.Println("最终数组", arr)
-		// 写入
-		newPath := strings.Replace(filePath, ".txt", "sort.txt", -1)
-		saveFile, _ := os.Create(newPath)
-		save := bufio.NewWriter(saveFile)
-		for i := 0; i < len(myData.Data); i++ {
-			fmt.Fprintln(save, strconv.FormatFloat(myData.Data[i].(float64), 'f', 6, 64))
-		}
-		save.Flush()
-		saveFile.Close()
-		arr = nil
-		runtime.GC()
-		debug.FreeOSMemory()
-		// 发送
-		// 整数
-		myStringStart := ByteCode.IntToBytes(0)
-		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
-		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
-		conn.Write(myStringStart)
-		fileSort, err := os.Open(newPath)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		brSort := bufio.NewReader(fileSort)
-		for {
-			line, _, err := brSort.ReadLine()
-			if err == io.EOF {
-				break
-			}
-			data, _ := strconv.ParseFloat(string(line), 64)
-			//arr = append(arr, data)
-			for i := 0; i < len(myData.Data); i++ {
-				conn.Write(ByteCode.IntToBytes(0))
-				myBytesData := ByteCode.IntToBytes(2)
-				conn.Write(myBytesData)
-				conn.Write(ByteCode.Float64ToByte(data))
-			}
-		}
-		fileSort.Close()
-		// 结束
-		myBytesEnd := ByteCode.IntToBytes(1)
-		myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(0)...)
-		if isIncreasing {
-			myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(1)...)
-		} else {
-			myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(2)...)
-		}
-		conn.Write(myBytesEnd)
-	} else if myType == 3 {
-		arr := make([]interface{}, 0)
-		fi, err := os.Open(filePath)
-		defer fi.Close()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		br := bufio.NewReader(fi)
-		for {
-			line, _, err := br.ReadLine()
-			if err == io.EOF {
-				break
-			}
+		} else if myType == 3 {
 			data := string(line)
 			arr = append(arr, data)
-		}
-		// 排序
-		myData := new(sort.QuickSortData)
-		myData.IsIncreasing = true
-		myData.Data = arr
-		QuickSortDataByType(myData, myType)
-		myData.QuickSort()
-		fmt.Println("最终数组", arr)
-		newPath := strings.Replace(filePath, ".txt", "sort.txt", -1)
-		saveFile, _ := os.Create(newPath)
-		save := bufio.NewWriter(saveFile)
-		for i := 0; i < len(myData.Data); i++ {
-			fmt.Fprintln(save, myData.Data[i].(string))
-		}
-		save.Flush()
-		saveFile.Close()
-		arr = nil
-		runtime.GC()
-		debug.FreeOSMemory()
-		// 发送
-		// 整数
-		myStringStart := ByteCode.IntToBytes(0)
-		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
-		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
-		conn.Write(myStringStart)
-
-		fileSort, err := os.Open(newPath)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		brSort := bufio.NewReader(fileSort)
-		for {
-			line, _, err := brSort.ReadLine()
-			if err == io.EOF {
-				break
-			}
-			//arr = append(arr, data)
-			conn.Write(ByteCode.IntToBytes(0))
-			myBytesData := ByteCode.IntToBytes(3)
-			conn.Write(myBytesData)
-			myBytesData1 := ByteCode.IntToBytes(len(string(line)))
-			conn.Write(myBytesData1)
-			conn.Write(line)
-		}
-		fileSort.Close()
-		// 结束
-		myBytesEnd := ByteCode.IntToBytes(1)
-		myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(0)...)
-		if isIncreasing {
-			myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(1)...)
-		} else {
-			myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(2)...)
-		}
-		conn.Write(myBytesEnd)
-	} else if myType == 4 {
-		arr := make([]interface{}, 0)
-		fi, err := os.Open(filePath)
-		defer fi.Close()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		br := bufio.NewReader(fi)
-		for {
-			line, _, err := br.ReadLine()
-			if err == io.EOF {
-				break
-			}
+		} else if myType == 4 {
 			data := string(line)
 			dataList := strings.Split(data, " # ")
 			times, _ := strconv.Atoi(dataList[1])
 			arr = append(arr, Pass{dataList[0], times})
 		}
-		// 排序
-		myData := new(sort.QuickSortData)
-		myData.IsIncreasing = true
-		myData.Data = arr
-		QuickSortDataByType(myData, myType)
-		myData.QuickSort()
-		fmt.Println("最终数组", arr)
-		newPath := strings.Replace(filePath, ".txt", "sort.txt", -1)
-		saveFile, _ := os.Create(newPath)
-		save := bufio.NewWriter(saveFile)
-		for i := 0; i < len(myData.Data); i++ {
-			fmt.Fprintln(save, myData.Data[i].(Pass).PassWord+
-				" # "+strconv.Itoa(myData.Data[i].(Pass).times))
+	}
+	// 排序
+	myData := new(sort.QuickSortData)
+	myData.IsIncreasing = true
+	myData.Data = arr
+	QuickSortDataByType(myData, myType)
+	myData.QuickSort()
+	fmt.Println("最终数组", arr)
+
+	newPath := strings.Replace(filePath, ".txt", "sort.txt", -1)
+	saveFile, _ := os.Create(newPath)
+	save := bufio.NewWriter(saveFile)
+	for i := 0; i < len(myData.Data); i++ {
+		if myType == 1 {
+			fmt.Fprintln(save, strconv.Itoa(myData.Data[i].(int)))
+		} else if myType == 2 {
+			fmt.Fprintln(save, strconv.FormatFloat(myData.Data[i].(float64), 'f', 6, 64))
+		} else if myType == 3 {
+			fmt.Fprintln(save, myData.Data[i].(string))
+		} else if myType == 4 {
+			fmt.Fprintln(save, myData.Data[i].(Pass).PassWord+" # "+strconv.Itoa(myData.Data[i].(Pass).times))
 		}
-		save.Flush()
-		saveFile.Close()
-		arr = nil
-		runtime.GC()
-		debug.FreeOSMemory()
-		// 发送
-		// 整数
-		myStringStart := ByteCode.IntToBytes(0)
-		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
-		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
-		conn.Write(myStringStart)
-		fileSort, err := os.Open(newPath)
-		if err != nil {
-			fmt.Println(err)
-			return
+	}
+	save.Flush()
+	saveFile.Close()
+
+	// 释放内存
+	arr = nil
+	runtime.GC()
+	debug.FreeOSMemory()
+
+	myStringStart := ByteCode.IntToBytes(1)
+	myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
+	myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
+	conn.Write(myStringStart)
+
+	fileSort, err := os.Open(newPath)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	brSort := bufio.NewReader(fileSort)
+	for {
+		line, _, err := brSort.ReadLine()
+		if err == io.EOF {
+			break
 		}
-		brSort := bufio.NewReader(fileSort)
-		for {
-			line, _, err := brSort.ReadLine()
-			if err == io.EOF {
-				break
+		if myType == 1 {
+			data, _ := strconv.Atoi(string(line))
+			//arr = append(arr, data)
+			for i := 0; i < len(myData.Data); i++ {
+				conn.Write(ByteCode.IntToBytes(1))
+				conn.Write(ByteCode.IntToBytes(1))
+				conn.Write(ByteCode.IntToBytes(data))
 			}
+		} else if myType == 2 {
+			data, _ := strconv.ParseFloat(string(line), 64)
+			//arr = append(arr, data)
+			for i := 0; i < len(myData.Data); i++ {
+				conn.Write(ByteCode.IntToBytes(1))
+				conn.Write(ByteCode.IntToBytes(2))
+				conn.Write(ByteCode.Float64ToByte(data))
+			}
+		} else if myType == 3 {
+			conn.Write(ByteCode.IntToBytes(1))
+			conn.Write(ByteCode.IntToBytes(3))
+			conn.Write(ByteCode.IntToBytes(len(string(line))))
+			conn.Write(line)
+		} else if myType == 4 {
 			data := string(line)
 			dataList := strings.Split(data, " # ")
 			password := dataList[0]
 			times, _ := strconv.Atoi(dataList[1])
 			conn.Write(ByteCode.IntToBytes(1))
-			myBytesData := ByteCode.IntToBytes(4)
-			conn.Write(myBytesData)
+			conn.Write(ByteCode.IntToBytes(4))
 			conn.Write(ByteCode.IntToBytes(times))
 			conn.Write(ByteCode.IntToBytes(len(password)))
 			conn.Write([]byte(password))
-			myData1 := ByteCode.IntToBytes(len(string(line)))
-			conn.Write(myData1)
-			conn.Write(line)
 		}
-		fileSort.Close()
-		// 结束
-		myBytesEnd := ByteCode.IntToBytes(1)
-		myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(0)...)
-		if isIncreasing {
-			myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(1)...)
-		} else {
-			myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(2)...)
-		}
-		conn.Write(myBytesEnd)
 	}
+	fileSort.Close()
+
+	myBytesEnd := ByteCode.IntToBytes(0)
+	myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(0)...)
+	if isIncreasing {
+		myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(1)...)
+	} else {
+		myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(2)...)
+	}
+	conn.Write(myBytesEnd)
 }
 
 func main() {
