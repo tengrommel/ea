@@ -173,8 +173,6 @@ func Server(conn net.Conn) {
 					saveFile.Close()
 					DiskFileSortAndSend(fileStorePath, myType, false, conn)
 				}
-			} else {
-
 			}
 		}
 	}
