@@ -1,12 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"ea/hack/algorithm/7_distributed_map_reduce/SlaverServer/SlaveServer/ByteCode"
 	"ea/hack/algorithm/7_distributed_map_reduce/SlaverServer/SlaveServer/sort"
 	"fmt"
+	"math/rand"
 	"net"
+	"os"
 	"runtime"
 	"runtime/debug"
+	"strconv"
+	"time"
 )
 
 type Pass struct {
@@ -102,17 +107,66 @@ func Server(conn net.Conn) {
 				}
 			} else if data1 == 1 {
 				// 硬盘模式
+			AAA:
+				rand.Seed(time.Now().UnixNano())
+				fileNameNumber := rand.Int() % 10000
+				fileStorePath := filePath + strconv.Itoa(fileNameNumber) + ".txt"
+				if _, err := os.Stat(fileStorePath); err == nil {
+					goto AAA
+				}
+				fmt.Println(fileStorePath)
+				saveFile, _ := os.Create(fileStorePath)
+				var save *bufio.Writer
 				if data2 == 0 && data3 == 0 {
 					// 开始
+					save = bufio.NewWriter(saveFile)
 				}
 				if data2 == 1 {
 					// 整数
+					//arr = append(arr, data3)
+					fmt.Fprintln(save, strconv.Itoa(data3))
+					myType = 1
 				} else if data2 == 2 {
 					// 实数
+					floatNum := ByteCode.ByteToFloat64(buf[16:])
+					fmt.Fprintln(save, strconv.FormatFloat(floatNum, 'f', 6, 64))
+					myType = 2
 				} else if data3 == 3 {
-
-				} else if data3 == 4 {
+					stringByte := make([]byte, data3, data3)
+					length, _ := conn.Read(stringByte)
+					if length == data3 {
+						//arr = append(arr, string(stringByte))
+						fmt.Fprintln(save, string(stringByte))
+					}
+					myType = 3
+				} else if data2 == 4 {
 					// 结构体
+					buf1 := make([]byte, 8)
+					length, _ := conn.Read(buf)
+					if length == 8 {
+						data4 := ByteCode.BytesToInt(buf1)
+						stringByte := make([]byte, data4, data4)
+						length, _ := conn.Read(stringByte)
+						if length == data4 {
+							fmt.Fprintln(save, string(stringByte)+" # "+strconv.Itoa(data3))
+						}
+					}
+					myType = 4
+				}
+				if data2 == 0 && data3 == 1 {
+					// 结束，从大到小
+					save.Flush()
+					saveFile.Close()
+					// 类型划分
+					// 读取文件
+					// 排序
+					// 写入文件
+					// 读取文件传输
+				}
+				if data2 == 0 && data3 == 2 {
+					// 结束，从小到大
+					save.Flush()
+					saveFile.Close()
 				}
 			} else {
 
