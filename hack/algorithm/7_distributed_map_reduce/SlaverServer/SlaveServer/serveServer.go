@@ -5,12 +5,14 @@ import (
 	"ea/hack/algorithm/7_distributed_map_reduce/SlaverServer/SlaveServer/ByteCode"
 	"ea/hack/algorithm/7_distributed_map_reduce/SlaverServer/SlaveServer/sort"
 	"fmt"
+	"io"
 	"math/rand"
 	"net"
 	"os"
 	"runtime"
 	"runtime/debug"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -83,6 +85,7 @@ func Server(conn net.Conn) {
 					// 结束 从小到大
 					fmt.Println("收到数组", arr)
 					myData := new(sort.QuickSortData)
+					myData.Data = arr
 					myData.IsIncreasing = true
 					QuickSortDataByType(myData, myType)
 					myData.QuickSort()
@@ -162,52 +165,17 @@ func Server(conn net.Conn) {
 					// 排序
 					// 写入文件
 					// 读取文件传输
+					DiskFileSortAndSend(fileStorePath, myType, true, conn)
 				}
 				if data2 == 0 && data3 == 2 {
 					// 结束，从小到大
 					save.Flush()
 					saveFile.Close()
+					DiskFileSortAndSend(fileStorePath, myType, false, conn)
 				}
 			} else {
 
 			}
-
-			//	if data1 == 0 && data2 == 0 {
-			//		// 开始
-			//		arr = make([]string, 0, 0)
-			//	}
-			//	if data1 == 3 {
-			//		// 接收数组
-			//		//arr = append(arr, data2)
-			//		stringByte := make([]byte, data2, data2)
-			//		length, _ := conn.Read(stringByte)
-			//		fmt.Println(data2, length)
-			//		if length == data2 {
-			//			arr = append(arr, string(stringByte))
-			//		}
-			//	}
-			//	if data1 == 0 && data2 == 1 {
-			//		// 结束
-			//		fmt.Println("收到数组 arr:", arr)
-			//		sort.Strings(arr)
-			//		fmt.Println("数组排序完成", arr)
-			//		// 返回结果
-			//		myArray := arr
-			//		myBytesStart := ByteCode.IntToBytes(0)
-			//		myBytesStart = append(myBytesStart, ByteCode.IntToBytes(0)...)
-			//		conn.Write(myBytesStart)
-			//
-			//		for i := 0; i < len(myArray); i++ {
-			//			myBytesData := ByteCode.IntToBytes(3)
-			//			myBytesData = append(myBytesData, ByteCode.IntToBytes(len(myArray[i]))...)
-			//			conn.Write(myBytesData)
-			//			conn.Write([]byte(myArray[i]))
-			//		}
-			//		// 结束
-			//		myBytesEnd := ByteCode.IntToBytes(0)
-			//		myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(1)...)
-			//		conn.Write(myBytesEnd)
-			//	}
 		}
 	}
 }
@@ -215,7 +183,6 @@ func Server(conn net.Conn) {
 func SendResult(myData *sort.QuickSortData, conn net.Conn, myType int, isIncreasing bool) {
 	if myType == 1 {
 		// 整数
-		// 字符串
 		myStringStart := ByteCode.IntToBytes(0)
 		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
 		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
@@ -340,6 +307,74 @@ func QuickSortDataByType(myData *sort.QuickSortData, myType int) {
 				return data1.(Pass).times > data2.(Pass).times
 			}
 		}
+	}
+}
+
+func DiskFileSortAndSend(filePath string, myType int, isIncreasing bool, conn net.Conn) {
+	if myType == 1 {
+		arr := make([]interface{}, 0)
+
+		// 排序
+		myData := new(sort.QuickSortData)
+		myData.IsIncreasing = true
+		myData.Data = arr
+		QuickSortDataByType(myData, myType)
+		myData.QuickSort()
+		fmt.Println("最终数组", arr)
+		newPath := strings.Replace(filePath, ".txt", "sort.txt", -1)
+		saveFile, _ := os.Create(newPath)
+		save := bufio.NewWriter(saveFile)
+		for i := 0; i < len(myData.Data); i++ {
+			fmt.Fprintln(save, strconv.Itoa(myData.Data[i].(int)))
+		}
+		save.Flush()
+		saveFile.Close()
+		arr = nil
+		runtime.GC()
+		debug.FreeOSMemory()
+		// 发送
+		// 整数
+		myStringStart := ByteCode.IntToBytes(0)
+		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
+		myStringStart = append(myStringStart, ByteCode.IntToBytes(0)...)
+		conn.Write(myStringStart)
+
+		fileSort, err := os.Open(newPath)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		brSort := bufio.NewReader(fileSort)
+		for {
+			line, _, err := brSort.ReadLine()
+			if err == io.EOF {
+				break
+			}
+			data, _ := strconv.Atoi(string(line))
+			//arr = append(arr, data)
+			for i := 0; i < len(myData.Data); i++ {
+				conn.Write(ByteCode.IntToBytes(0))
+				myBytesData := ByteCode.IntToBytes(1)
+				conn.Write(myBytesData)
+				conn.Write(ByteCode.IntToBytes(data))
+			}
+		}
+		fileSort.Close()
+		// 结束
+		myBytesEnd := ByteCode.IntToBytes(0)
+		myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(0)...)
+		if isIncreasing {
+			myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(1)...)
+		} else {
+			myBytesEnd = append(myBytesEnd, ByteCode.IntToBytes(2)...)
+		}
+		conn.Write(myBytesEnd)
+	} else if myType == 2 {
+
+	} else if myType == 3 {
+
+	} else if myType == 4 {
+
 	}
 }
 
