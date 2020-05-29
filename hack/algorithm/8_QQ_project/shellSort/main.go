@@ -1,6 +1,39 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"runtime"
+	"sync"
+)
+
+func ShellSortGo(arr []int) {
+	if len(arr) < 2 || arr == nil {
+		return
+	}
+	cpuNum := runtime.NumCPU() // 获取CPU的数量
+	wg := sync.WaitGroup{}     // 批量等待
+	for gap := len(arr); gap > 0; gap /= 2 {
+		wg.Add(cpuNum)
+		ch := make(chan int, 10000)
+		go func() {
+			// 管道写入
+			for k := 0; k < gap; k++ {
+				ch <- k
+			}
+			close(ch)
+		}()
+		for k := 0; k < cpuNum; k++ {
+			go func() {
+				for v := range ch {
+					ShellSortStep(arr, v, gap)
+				}
+				wg.Done()
+			}()
+		}
+		wg.Wait()
+	}
+	fmt.Println(arr)
+}
 
 func ShellSortStep(arr []int, start int, gap int) {
 	length := len(arr)
