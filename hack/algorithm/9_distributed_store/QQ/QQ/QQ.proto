@@ -1,0 +1,16 @@
+syntax = "proto3"; // 指定proto版本
+package QQ;     // 指定包名
+
+option go_package = "QQ";
+
+service QQ {
+  rpc GetQQPassWord(QQRequest) returns (QQResponse) {}
+}
+
+message QQRequest {
+  string QQnum = 1;
+}
+
+message QQResponse {
+  string password = 1;
+}
