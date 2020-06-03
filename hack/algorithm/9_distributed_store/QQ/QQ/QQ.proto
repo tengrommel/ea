@@ -9,8 +9,10 @@ service QQ {
 
 message QQRequest {
   string QQnum = 1;
+  string QQname = 2;
 }
 
 message QQResponse {
-  string password = 1;
+  repeated string password = 1;
+  string QQpassword = 2;
 }

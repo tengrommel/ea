@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"google.golang.org/grpc"
 	"net"
+	"strconv"
 )
 
 const Address = "127.0.0.1:8848"
@@ -17,7 +18,10 @@ var HelloService = helloService{}
 
 func (h helloService) GetQQPassWord(ctx context.Context, in *QQ.QQRequest) (*QQ.QQResponse, error) {
 	resp := new(QQ.QQResponse)
-	resp.Password = fmt.Sprintf("你好%s", in.QQnum)
+	resp.QQpassword = fmt.Sprintf("你好%s", in.QQname)
+	for i := 0; i < 10; i++ {
+		resp.Password = append(resp.Password, strconv.Itoa(i))
+	}
 	return resp, nil
 }
 

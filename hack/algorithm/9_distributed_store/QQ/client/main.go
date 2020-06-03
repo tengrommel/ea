@@ -22,11 +22,13 @@ func main() {
 	defer conn.Close()
 	c := QQ.NewQQClient(conn)
 	req := &QQ.QQRequest{
-		QQnum: "1343",
+		QQnum:  "1343",
+		QQname: "你大爷",
 	}
 	res, err := c.GetQQPassWord(context.Background(), req)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println("收到", res.Password)
+	fmt.Println("收到", res.QQpassword)
 }
