@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.24.0-devel
 // 	protoc        (unknown)
-// source: QQ.proto
+// source: FindQQPassword.proto
 
 package QQ
 
@@ -313,5 +313,5 @@ var _QQ_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "QQ.proto",
+	Metadata: "FindQQPassword.proto",
 }

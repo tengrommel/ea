@@ -1,0 +1,16 @@
+syntax = "proto3"; // 指定proto版本
+package FindQQGroupByQQ;     // 指定包名
+
+option go_package = "FindQQGroupByQQ";
+
+service FindQQGroupByQQService {
+  rpc FindQQGroupByQQ(QQRequest) returns (QQResponse) {}
+}
+
+message QQRequest {
+  string QQNum = 1;
+}
+
+message QQResponse {
+  repeated string GroupNum= 1;
+}

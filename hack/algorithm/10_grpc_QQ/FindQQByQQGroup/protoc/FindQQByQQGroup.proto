@@ -1,0 +1,16 @@
+syntax = "proto3"; // 指定proto版本
+package FindQQPassword;     // 指定包名
+
+option go_package = "FindQQPassword";
+
+service FindQQByQQGroupService {
+  rpc FindQQByQQGroup(QQRequest) returns (QQResponse) {}
+}
+
+message QQRequest {
+  string QQGroupNum = 1;
+}
+
+message QQResponse {
+  repeated string QQ = 1;
+}

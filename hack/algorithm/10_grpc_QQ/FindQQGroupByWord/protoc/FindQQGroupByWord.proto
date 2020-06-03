@@ -1,0 +1,16 @@
+syntax = "proto3"; // 指定proto版本
+package FindQQGroupByWord;     // 指定包名
+
+option go_package = "FindQQGroupByWord";
+
+service FindQQGroupByWordService {
+  rpc FindQQGroupByWord(QQRequest) returns (QQResponse) {}
+}
+
+message QQRequest {
+  repeated string QQNum = 1;
+}
+
+message QQResponse {
+  repeated string Group = 1;
+}
