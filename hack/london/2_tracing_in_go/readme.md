@@ -11,3 +11,9 @@
 
 # Tracing Basics
 > A trace is a data/execution path through the system
+    
+    type struct Tracing {
+        TraceId: string
+        SpanId: int64
+        ParentId: int64
+    }
