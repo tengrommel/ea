@@ -2,23 +2,33 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/satori/go.uuid"
 	"net/http"
 )
 
 type Article struct {
-	Id      string `json:"id, omitempty"`
-	Author  string `json:"author, omitempty"`
-	Title   string `json:"title, omitempty"`
-	Content string `json:"content, omitempty"`
+	Id      string `json:"id, omitempty" validate:"omitempty, uuid"`
+	Author  string `json:"author, omitempty" validate:"isdefault"`
+	Title   string `json:"title, omitempty" validate:"required"`
+	Content string `json:"content, omitempty" validate:"required"`
 }
 
 func ArticleCreateEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("content-type", "application/json")
 	var article Article
 	json.NewDecoder(request.Body).Decode(&article)
+
+	validate := validator.New()
+	err := validate.Struct(article)
+	if err != nil {
+		response.WriteHeader(500)
+		response.Write([]byte(`{"message": "` + err.Error() + `"}`))
+		return
+	}
 	article.Id = uuid.Must(uuid.NewV4(), nil).String()
+	article.Author = "teng"
 	articles = append(articles, article)
 	json.NewEncoder(response).Encode(articles)
 }
