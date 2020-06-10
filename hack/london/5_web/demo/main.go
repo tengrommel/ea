@@ -4,10 +4,38 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
+	"strings"
 )
+
+func ValidateMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
+		authorizationHeader := request.Header.Get("authorization")
+		if authorizationHeader != "" {
+			bearerToken := strings.Split(authorizationHeader, " ")
+			if len(bearerToken) == 2 {
+				decoded, err := ValidateJWT(bearerToken[1])
+				if err != nil {
+					response.Header().Add("content-type", "application/json")
+					response.WriteHeader(500)
+					response.Write([]byte(`{"message": "` + err.Error() + `"}`))
+					return
+				}
+				// next step here
+				context.Set(request, "decoded", decoded)
+				next(response, request)
+			}
+		} else {
+			response.Header().Add("content-type", "application/json")
+			response.WriteHeader(500)
+			response.Write([]byte(`{"message": "auth header is need"}`))
+			return
+		}
+	})
+}
 
 type CustomJWTClaim struct {
 	Id string `json:"id"`
@@ -76,6 +104,6 @@ func main() {
 	router.HandleFunc("/article/{id}", ArticleRetrieveEndpoint).Methods("GET")
 	router.HandleFunc("/article/{id}", ArticleDeleteEndpoint).Methods("DELETE")
 	router.HandleFunc("/article/{id}", ArticleUpdateEndpoint).Methods("PUT")
-	router.HandleFunc("/article", ArticleCreateEndpoint).Methods("POST")
+	router.HandleFunc("/article", ValidateMiddleware(ArticleCreateEndpoint)).Methods("POST")
 	http.ListenAndServe(":12345", router)
 }

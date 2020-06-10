@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/satori/go.uuid"
 	"net/http"
@@ -19,22 +20,23 @@ func ArticleCreateEndpoint(response http.ResponseWriter, request *http.Request) 
 	response.Header().Add("content-type", "application/json")
 	var article Article
 	json.NewDecoder(request.Body).Decode(&article)
-	tokenString := request.URL.Query().Get("token")
-	token, err := ValidateJWT(tokenString)
-	if err != nil {
-		response.WriteHeader(500)
-		response.Write([]byte(`{"message": "` + err.Error() + `"}`))
-		return
-	}
+	token := context.Get(request, "decoded").(CustomJWTClaim)
+	//tokenString := request.URL.Query().Get("token")
+	//token, err := ValidateJWT(tokenString)
+	//if err != nil {
+	//	response.WriteHeader(500)
+	//	response.Write([]byte(`{"message": "` + err.Error() + `"}`))
+	//	return
+	//}
 	validate := validator.New()
-	err = validate.Struct(article)
+	err := validate.Struct(article)
 	if err != nil {
 		response.WriteHeader(500)
 		response.Write([]byte(`{"message": "` + err.Error() + `"}`))
 		return
 	}
 	article.Id = uuid.Must(uuid.NewV4(), nil).String()
-	article.Author = token.(CustomJWTClaim).Id
+	article.Author = token.Id
 	articles = append(articles, article)
 	json.NewEncoder(response).Encode(articles)
 }

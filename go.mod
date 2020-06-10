@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.6.2
 	github.com/golang/protobuf v1.4.1
 	github.com/googollee/go-socket.io v1.4.3 // indirect
+	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.7.4
 	github.com/jergoo/go-grpc-example v0.0.0-20191112085010-4cd5156242f3
 	github.com/jinzhu/gorm v1.9.12
