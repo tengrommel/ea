@@ -2,11 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"time"
 )
 
 type Author struct {
@@ -54,7 +56,16 @@ func LoginEndpoint(response http.ResponseWriter, request *http.Request) {
 				response.Write([]byte(`{"message": "invalid password"}`))
 				return
 			}
-			json.NewEncoder(response).Encode(author)
+			claims := CustomJWTClaim{
+				Id: author.Id,
+				StandardClaims: jwt.StandardClaims{
+					ExpiresAt: time.Now().Local().Add(time.Hour).Unix(),
+					Issuer:    "The Polyglot Developer",
+				},
+			}
+			token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+			tokenString, _ := token.SignedString([]byte("theploygloatdeveploper"))
+			response.Write([]byte(`"token": "` + tokenString + `"}`))
 			return
 		}
 	}
