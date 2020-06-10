@@ -10,6 +10,7 @@ require (
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/handlers v1.4.2 // indirect
 	github.com/gorilla/mux v1.7.4
+	github.com/graphql-go/graphql v0.7.9 // indirect
 	github.com/jergoo/go-grpc-example v0.0.0-20191112085010-4cd5156242f3
 	github.com/jinzhu/gorm v1.9.12
 	github.com/mitchellh/mapstructure v1.3.2 // indirect
