@@ -60,9 +60,10 @@ func ArticleRetrieveEndpoint(response http.ResponseWriter, request *http.Request
 
 func ArticleDeleteEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("content-type", "application/json")
+	token := context.Get(request, "decoded").(CustomJWTClaim)
 	params := mux.Vars(request)
 	for index, article := range articles {
-		if article.Id == params["id"] {
+		if article.Id == params["id"] && article.Author == token.Id {
 			articles = append(articles[:index], articles[index+1:]...)
 			json.NewEncoder(response).Encode(article)
 			return
@@ -76,8 +77,9 @@ func ArticleUpdateEndpoint(response http.ResponseWriter, request *http.Request) 
 	params := mux.Vars(request)
 	var changeItem Article
 	json.NewDecoder(request.Body).Decode(&changeItem)
+	token := context.Get(request, "decoded").(CustomJWTClaim)
 	for index, article := range articles {
-		if article.Id == params["id"] {
+		if article.Id == params["id"] && article.Author == token.Id {
 			if changeItem.Author != "" {
 				article.Author = changeItem.Author
 			}

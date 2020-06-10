@@ -102,8 +102,8 @@ func main() {
 	router.HandleFunc("/author/{id}", AuthorUpdateEndpoint).Methods("PUT")
 	router.HandleFunc("/articles", ArticleRetrieveAllEndpoint).Methods("GET")
 	router.HandleFunc("/article/{id}", ArticleRetrieveEndpoint).Methods("GET")
-	router.HandleFunc("/article/{id}", ArticleDeleteEndpoint).Methods("DELETE")
-	router.HandleFunc("/article/{id}", ArticleUpdateEndpoint).Methods("PUT")
+	router.HandleFunc("/article/{id}", ValidateMiddleware(ArticleDeleteEndpoint)).Methods("DELETE")
+	router.HandleFunc("/article/{id}", ValidateMiddleware(ArticleUpdateEndpoint)).Methods("PUT")
 	router.HandleFunc("/article", ValidateMiddleware(ArticleCreateEndpoint)).Methods("POST")
 	http.ListenAndServe(":12345", router)
 }
