@@ -1,18 +1,49 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/graphql-go/graphql"
 	"github.com/mitchellh/mapstructure"
 	"github.com/satori/go.uuid"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
+
+var JWT_SECRET []byte = []byte("tehjkhajkf")
 
 type GraphQLPayload struct {
 	Query     string                 `json:"query"`
 	Variables map[string]interface{} `json:"variables"`
+}
+
+type CustomJWTClaim struct {
+	Id string `json:"id"`
+	jwt.StandardClaims
+}
+
+func ValidateJWT(message string) (interface{}, error) {
+	token, err := jwt.Parse(message, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method %v", token.Header["alg"])
+		}
+		return JWT_SECRET, nil
+	})
+	if err != nil {
+		return nil, errors.New(`{"message": "` + err.Error() + `"}`)
+	}
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		var tokenData CustomJWTClaim
+		mapstructure.Decode(claims, &tokenData)
+		return tokenData, nil
+	} else {
+		return nil, errors.New(`{"message"` + err.Error() + `"}`)
+	}
 }
 
 var authors []Author = []Author{
@@ -123,6 +154,7 @@ var rootMotation *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				var changes Author
 				mapstructure.Decode(params.Args["author"], &changes)
+				validate := validator.New()
 				for index, author := range authors {
 					if author.Id == changes.Id {
 						if changes.FirstName != "" {
@@ -138,7 +170,12 @@ var rootMotation *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 							author.UserName = changes.UserName
 						}
 						if changes.Password != "" {
-							author.Password = changes.Password
+							err := validate.Var(changes.Password, "gte=4")
+							if err != nil {
+								return nil, err
+							}
+							hash, _ := bcrypt.GenerateFromPassword([]byte(changes.Password), 10)
+							author.Password = string(hash)
 						}
 						authors[index] = author
 						return authors, nil
@@ -157,8 +194,17 @@ var rootMotation *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				var article Article
 				mapstructure.Decode(params.Args["article"], &article)
+				decoded, err := ValidateJWT(params.Context.Value("token").(string))
+				if err != nil {
+					return nil, err
+				}
+				validate := validator.New()
+				err = validate.Struct(article)
+				if err != nil {
+					return nil, err
+				}
 				article.Id = uuid.Must(uuid.NewV4(), nil).String()
-				article.Author = "teng"
+				article.Author = decoded.(CustomJWTClaim).Id
 				articles = append(articles, article)
 				return articles, nil
 			},
@@ -182,6 +228,7 @@ func main() {
 			Schema:         schema,
 			RequestString:  payload.Query,
 			VariableValues: payload.Variables,
+			Context:        context.WithValue(context.Background(), "token", request.URL.Query().Get("token")),
 		})
 		json.NewEncoder(response).Encode(result)
 	})
