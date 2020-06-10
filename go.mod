@@ -6,6 +6,8 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/gin-gonic/gin v1.6.2
 	github.com/golang/protobuf v1.4.1
+	github.com/golang/snappy v0.0.1 // indirect
+	github.com/google/uuid v1.1.1 // indirect
 	github.com/googollee/go-socket.io v1.4.3 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/handlers v1.4.2 // indirect
@@ -16,6 +18,7 @@ require (
 	github.com/mitchellh/mapstructure v1.3.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/opentracing/opentracing-go v1.1.0 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	go.uber.org/zap v1.14.1
 	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9 // indirect
@@ -24,4 +27,8 @@ require (
 	golang.org/x/text v0.3.2
 	google.golang.org/grpc v1.27.0
 	google.golang.org/protobuf v1.24.0
+	gopkg.in/couchbase/gocb.v1 v1.6.7 // indirect
+	gopkg.in/couchbase/gocbcore.v7 v7.1.17 // indirect
+	gopkg.in/couchbaselabs/gocbconnstr.v1 v1.0.4 // indirect
+	gopkg.in/couchbaselabs/jsonx.v1 v1.0.0 // indirect
 )

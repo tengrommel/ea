@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/graphql-go/graphql"
 	"github.com/mitchellh/mapstructure"
 	"github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/couchbase/gocb.v1"
 	"net/http"
 )
 
@@ -212,8 +214,16 @@ var rootMotation *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+var bucket *gocb.Bucket
+
 func main() {
 	fmt.Println("starting graphql application...")
+	cluster, _ := gocb.Connect("couchbase://localhost")
+	cluster.Authenticate(gocb.PasswordAuthenticator{
+		Username: "demo",
+		Password: "abc123",
+	})
+	bucket, _ = cluster.OpenBucket("graphql", "")
 	router := mux.NewRouter()
 	schema, _ := graphql.NewSchema(
 		graphql.SchemaConfig{
@@ -232,5 +242,22 @@ func main() {
 		})
 		json.NewEncoder(response).Encode(result)
 	})
-	http.ListenAndServe(":12345", router)
+	methods := handlers.AllowedMethods(
+		[]string{
+			"GET",
+			"POST",
+			"PUT",
+			"DELETE",
+		})
+	headers := handlers.AllowedHeaders(
+		[]string{
+			"Content-Type",
+			"Authorization",
+			"X-Requested-With",
+		})
+	origins := handlers.AllowedOrigins(
+		[]string{
+			"*",
+		})
+	http.ListenAndServe(":12345", handlers.CORS(headers, methods, origins)(router))
 }
