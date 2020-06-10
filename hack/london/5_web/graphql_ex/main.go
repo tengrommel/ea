@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/graphql-go/graphql"
 	"github.com/mitchellh/mapstructure"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/couchbase/gocb.v1"
 	"net/http"
@@ -80,6 +80,16 @@ var rootQuery *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 		"authors": &graphql.Field{
 			Type: graphql.NewList(authorType),
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+				var authors []Author
+				query := gocb.NewN1qlQuery(`SELECT ` + bucket.Name() + `.* FROM ` + bucket.Name() + ` WHERE type = 'author'`)
+				rows, err := bucket.ExecuteN1qlQuery(query, nil)
+				if err != nil {
+					return nil, err
+				}
+				var row Author
+				for rows.Next(&row) {
+					authors = append(authors, row)
+				}
 				return authors, nil
 			},
 		},
@@ -92,17 +102,33 @@ var rootQuery *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				id := params.Args["id"].(string)
-				for _, author := range authors {
-					if author.Id == id {
-						return author, nil
-					}
+				//for _, author := range authors {
+				//	if author.Id == id {
+				//		return author, nil
+				//	}
+				//}
+				//return nil, nil
+				var author Author
+				_, err := bucket.Get(id, &author)
+				if err != nil {
+					return nil, err
 				}
-				return nil, nil
+				return author, nil
 			},
 		},
 		"articles": &graphql.Field{
 			Type: graphql.NewList(articleType),
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+				var articles []Article
+				query := gocb.NewN1qlQuery(`SELECT ` + bucket.Name() + `.* FROM ` + bucket.Name() + ` WHERE  type = 'author'`)
+				rows, err := bucket.ExecuteN1qlQuery(query, nil)
+				if err != nil {
+					return nil, err
+				}
+				var row Article
+				for rows.Next(&row) {
+					articles = append(articles, row)
+				}
 				return articles, nil
 			},
 		},
@@ -115,12 +141,19 @@ var rootQuery *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				id := params.Args["id"].(string)
-				for _, article := range articles {
-					if article.Id == id {
-						return article, nil
-					}
+				var article Article
+				bucket.Get(id, &article)
+				_, err := bucket.Get(id, &article)
+				if err != nil {
+					return nil, err
 				}
-				return nil, nil
+				return article, nil
+				//for _, article := range articles {
+				//	if article.Id == id {
+				//		return article, nil
+				//	}
+				//}
+				//return nil, nil
 			},
 		},
 	},
@@ -129,7 +162,7 @@ var rootMotation *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Mutation",
 	Fields: graphql.Fields{
 		"deleteAuthor": &graphql.Field{
-			Type: graphql.NewList(authorType),
+			Type: graphql.String,
 			Args: graphql.FieldConfigArgument{
 				"id": &graphql.ArgumentConfig{
 					Type: graphql.NewNonNull(graphql.String),
@@ -137,17 +170,22 @@ var rootMotation *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				id := params.Args["id"].(string)
-				for index, author := range authors {
-					if author.Id == id {
-						authors = append(authors[:index], authors[index+1:]...)
-						return authors, nil
-					}
+				_, err := bucket.Remove(id, 0)
+				if err != nil {
+					return nil, err
 				}
-				return nil, nil
+				return id, nil
+				//for index, author := range authors {
+				//	if author.Id == id {
+				//		authors = append(authors[:index], authors[index+1:]...)
+				//		return authors, nil
+				//	}
+				//}
+				//return nil, nil
 			},
 		},
 		"updateAuthor": &graphql.Field{
-			Type: graphql.NewList(authorType),
+			Type: authorType,
 			Args: graphql.FieldConfigArgument{
 				"author": &graphql.ArgumentConfig{
 					Type: authorInputType,
@@ -157,37 +195,30 @@ var rootMotation *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 				var changes Author
 				mapstructure.Decode(params.Args["author"], &changes)
 				validate := validator.New()
-				for index, author := range authors {
-					if author.Id == changes.Id {
-						if changes.FirstName != "" {
-							author.FirstName = changes.FirstName
-						}
-						if changes.LastName != "" {
-							author.LastName = changes.LastName
-						}
-						if changes.FirstName != "" {
-							author.FirstName = changes.FirstName
-						}
-						if changes.UserName != "" {
-							author.UserName = changes.UserName
-						}
-						if changes.Password != "" {
-							err := validate.Var(changes.Password, "gte=4")
-							if err != nil {
-								return nil, err
-							}
-							hash, _ := bcrypt.GenerateFromPassword([]byte(changes.Password), 10)
-							author.Password = string(hash)
-						}
-						authors[index] = author
-						return authors, nil
-					}
+				mutation := bucket.MutateIn(changes.Id, 0, 0)
+				if changes.FirstName != "" {
+					mutation.Upsert("firstname", changes.FirstName, true)
 				}
-				return nil, nil
+				if changes.LastName != "" {
+					mutation.Upsert("lastname", changes.LastName, true)
+				}
+				if changes.UserName != "" {
+					mutation.Upsert("username", changes.UserName, true)
+				}
+				if changes.Password != "" {
+					err := validate.Var(changes.Password, "gte=4")
+					if err != nil {
+						return nil, err
+					}
+					hash, _ := bcrypt.GenerateFromPassword([]byte(changes.Password), 10)
+					mutation.Upsert("password", string(hash), true)
+				}
+				mutation.Execute()
+				return changes, nil
 			},
 		},
 		"createArticle": &graphql.Field{
-			Type: graphql.NewList(articleType),
+			Type: articleType,
 			Args: graphql.FieldConfigArgument{
 				"article": &graphql.ArgumentConfig{
 					Type: articleInputType,
@@ -207,8 +238,10 @@ var rootMotation *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 				}
 				article.Id = uuid.Must(uuid.NewV4(), nil).String()
 				article.Author = decoded.(CustomJWTClaim).Id
-				articles = append(articles, article)
-				return articles, nil
+				article.Type = "article"
+				bucket.Insert(article.Id, article, 0)
+				//articles = append(articles, article)
+				return article, nil
 			},
 		},
 	},

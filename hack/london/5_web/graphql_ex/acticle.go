@@ -7,6 +7,7 @@ type Article struct {
 	Author  string `json:"author, omitempty" validate:"isdefault"`
 	Title   string `json:"title, omitempty" validate:"required"`
 	Content string `json:"content, omitempty" validate:"required"`
+	Type    string `json:"type, omitempty"`
 }
 
 var articleType *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
@@ -19,12 +20,15 @@ var articleType *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 			Type: authorType,
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				article := params.Source.(Article)
-				for _, author := range authors {
-					if author.Id == article.Author {
-						return author, nil
-					}
-				}
-				return nil, nil
+				var author Author
+				bucket.Get(article.Author, &author)
+				return author, nil
+				//for _, author := range authors {
+				//	if author.Id == article.Author {
+				//		return author, nil
+				//	}
+				//}
+				//return nil, nil
 			},
 		},
 		"title": &graphql.Field{
