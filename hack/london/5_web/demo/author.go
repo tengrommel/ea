@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+var JWT_SECRET []byte = []byte("dshkfhdjk")
+
 type Author struct {
 	Id        string `json:"id, omitempty" validate:"omitempty, uuid"`
 	FirstName string `json:"firstname, omitempty" validate:"required"`
@@ -64,7 +66,7 @@ func LoginEndpoint(response http.ResponseWriter, request *http.Request) {
 				},
 			}
 			token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
-			tokenString, _ := token.SignedString([]byte("theploygloatdeveploper"))
+			tokenString, _ := token.SignedString(JWT_SECRET)
 			response.Write([]byte(`"token": "` + tokenString + `"}`))
 			return
 		}

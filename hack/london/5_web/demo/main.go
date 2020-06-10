@@ -45,7 +45,7 @@ func ValidateJWT(message string) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method %v", token.Header["alg"])
 		}
-		return []byte("theployglotdeveloper"), nil
+		return JWT_SECRET, nil
 	})
 	if err != nil {
 		return nil, errors.New(`{"message": "` + err.Error() + `"}`)
