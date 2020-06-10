@@ -1,6 +1,11 @@
 package main
 
-import "github.com/graphql-go/graphql"
+import (
+	"encoding/json"
+	"github.com/graphql-go/graphql"
+	uuid "github.com/satori/go.uuid"
+	"net/http"
+)
 
 type Author struct {
 	Id        string `json:"id, omitempty"`
@@ -51,3 +56,24 @@ var authorInputType *graphql.InputObject = graphql.NewInputObject(graphql.InputO
 		},
 	},
 })
+
+func RegisterEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("content-type", "application/json")
+	var author Author
+	json.NewDecoder(request.Body).Decode(&author)
+	author.Id = uuid.Must(uuid.NewV4(), nil).String()
+	authors = append(authors, author)
+	json.NewEncoder(response).Encode(authors)
+}
+
+func LoginEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("content-type", "application/json")
+	var data Author
+	json.NewDecoder(request.Body).Decode(&data)
+	for _, author := range authors {
+		if author.UserName == data.UserName {
+			json.NewEncoder(response).Encode(author)
+		}
+	}
+	json.NewEncoder(response).Encode(Author{})
+}
