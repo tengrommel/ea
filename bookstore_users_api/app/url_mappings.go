@@ -1,11 +1,14 @@
 package app
 
-import "ea/bookstore_users_api/controllers"
+import (
+	"ea/bookstore_users_api/controllers/ping"
+	"ea/bookstore_users_api/controllers/users"
+)
 
 func mapUrls() {
-	router.GET("/ping", controllers.Ping)
+	router.GET("/ping", ping.Ping)
 
-	router.GET("/users/:user_id", controllers.GetUser)
-	router.GET("/users/search", controllers.CreateUser)
-	router.POST("/users/search", controllers.SearchUser)
+	router.GET("/users/:user_id", users.GetUser)
+	router.GET("/users/search", users.CreateUser)
+	router.POST("/users/search", users.SearchUser)
 }
