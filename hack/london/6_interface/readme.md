@@ -21,4 +21,4 @@ Inheritance
 Embedding(嵌入)
 > 鸭子类型看似loose coupling 
 
-但Go仍有一种constrained组合方式，使某类别struct explicit受到某个界面约束，必须implement其member method
+但Go仍有一种constrained组合方式，使某类别struct explicit受到某个界面约束，必须implement其member method 
