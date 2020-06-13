@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"ea/preformance/grpc/ex/greet/greetpb"
 	"fmt"
 	"google.golang.org/grpc"
@@ -9,6 +10,16 @@ import (
 )
 
 type server struct{}
+
+func (s server) Greet(ctx context.Context, request *greetpb.GreetRequest) (*greetpb.GreetResponse, error) {
+	fmt.Println("Greet function was invoked")
+	firstName := request.GetGreeting().GetFirstName()
+	result := "Hello" + firstName
+	res := &greetpb.GreetResponse{
+		Result: result,
+	}
+	return res, nil
+}
 
 func main() {
 	fmt.Println("Hello world")
