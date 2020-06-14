@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 	"io"
 	"log"
@@ -100,13 +101,29 @@ func (s server) Greet(ctx context.Context, request *greetpb.GreetRequest) (*gree
 
 func main() {
 	fmt.Println("Hello world")
-	listener, err := net.Listen("tcp", "0.0.0.0:50051")
+
+	lis, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
-	s := grpc.NewServer()
+
+	opts := []grpc.ServerOption{}
+	tls := false
+	if tls {
+		certFile := "/home/teng/Documents/git/ea/preformance/grpc/exssl/server.crt"
+		keyFile := "/home/teng/Documents/git/ea/preformance/grpc/exssl/server.pem"
+		creds, sslErr := credentials.NewServerTLSFromFile(certFile, keyFile)
+		if sslErr != nil {
+			log.Fatalf("Failed loading certificates: %v", sslErr)
+			return
+		}
+		opts = append(opts, grpc.Creds(creds))
+	}
+
+	s := grpc.NewServer(opts...)
 	greetpb.RegisterGreetServiceServer(s, &server{})
-	if err := s.Serve(listener); err != nil {
-		log.Fatalf("failed to server: %v", err)
+
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
 	}
 }
