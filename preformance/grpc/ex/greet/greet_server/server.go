@@ -5,6 +5,8 @@ import (
 	"ea/preformance/grpc/ex/greet/greetpb"
 	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"io"
 	"log"
 	"net"
@@ -13,6 +15,23 @@ import (
 )
 
 type server struct{}
+
+func (s server) GreetWithDeadline(ctx context.Context, request *greetpb.GreetWithDeadlineRequest) (*greetpb.GreetWithDeadlineResponse, error) {
+	fmt.Println("Greeting function was invoked")
+	for i := 0; i < 3; i++ {
+		if ctx.Err() == context.Canceled {
+			fmt.Println("The client canceled the request!")
+			return nil, status.Error(codes.DeadlineExceeded, "the client canceled the request")
+		}
+		time.Sleep(1 * time.Second)
+	}
+	firstName := request.GetGreeting().GetFirstName()
+	result := "Hello " + firstName
+	res := &greetpb.GreetWithDeadlineResponse{
+		Result: result,
+	}
+	return res, nil
+}
 
 func (s server) GreetEveryone(stream greetpb.GreetService_GreetEveryoneServer) error {
 	fmt.Printf("GreetEveryone function was invoked with a streaming request\n")
