@@ -197,3 +197,6 @@ The kill command allows you to send a signal to any application, and a comprehen
 ## Getting and setting the working directory
 
 *We can use the func Getwd() (dir string, err error) function of the os package to find out which path represents the current working directory*
+
+*Changing the working diectory is done with another function of the same package, that is, func Chdir(dir string) error*
+
