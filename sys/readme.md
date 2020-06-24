@@ -204,4 +204,20 @@ The kill command allows you to send a signal to any application, and a comprehen
 > The filepath package contains less than 20 functions, which is a small number compared to the packages of the standard library, and it's used to manipulate paths.
 
 ## Reading from files
+> Getting the contents of a file can be done with an auxiliary function in the io/ioutil package, as well as with the ReadFile function, which opens, reads, and closes the file at once. *This uses a small buffer(512 bytes) and loads the whole content in memory*
+
+This is not a good idea if the file size is very large, unknown, or if the content of the file can be processed one part at a time.
+
+Reading a huge file from disk at once means copying all the file's content into the primary memory, which is a limited resource. This can cause memory shortages, as well as runtime errors. Reading chunks of a file at a time can help read the content of big files without causing huge memory usage. This is because the same part of the memory will be reused when reading the next chunk.
+
+# Reader interface
+> For all operations that read from a disk, there's an interface that is paramount: 
+
+    type Reader interface {
+        Read(p []byte) (n int, err error)
+    }
+
+Its job is really simple - fill the given slice of bytes with the content that's been read and return the number of bytes that's been read and an error, if one occurs.
+
+*A reader makes it possible to process data in chunks (the size is determined by the slice), and if the same slice is reused for the operations that follow, the resulting program is consistently more memory efficient because it is using the same limited part of the memory that allocates the slice*
 
