@@ -200,3 +200,8 @@ The kill command allows you to send a signal to any application, and a comprehen
 
 *Changing the working diectory is done with another function of the same package, that is, func Chdir(dir string) error*
 
+## Path manipulation
+> The filepath package contains less than 20 functions, which is a small number compared to the packages of the standard library, and it's used to manipulate paths.
+
+## Reading from files
+
