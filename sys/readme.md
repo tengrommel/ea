@@ -221,3 +221,14 @@ Its job is really simple - fill the given slice of bytes with the content that's
 
 *A reader makes it possible to process data in chunks (the size is determined by the slice), and if the same slice is reused for the operations that follow, the resulting program is consistently more memory efficient because it is using the same limited part of the memory that allocates the slice*
 
+The file structure
+> The os.File type satisfies the reader interface and is the main actor that's used to interact with file contents. The most common way to obtain an instance for reading purposes is with the os.Open function. It's very important to remember to close a file when you're done using it - this will not be obvious with short-lived programs, but if an application keeps opening files without closing the ones that it's done with, the application will reach the limit of open files imposed by the operating system and start failing the opening operations.
+
+- One to get the limit of open files 
+    
+        ulimit -n
+- Another to check how many files are open by a certain process 
+
+        lsof -p PID
+
+
