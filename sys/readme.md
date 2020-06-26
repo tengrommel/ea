@@ -231,4 +231,12 @@ The file structure
 
         lsof -p PID
 
+# Using buffers
+> A data buffer, or just a buffer, is a part of memory that is used to store temporary data while it is moved. Byte buffers are implemented in the bytes package, and they are implemented by an underlying slice that is capable of growing every time the amount of data that needs to be stored will not fit.
+
+If new buffers get allocated each time, the old ones will eventually be cleaned up by the GC itself, which is not an optimal solution. It's always better to reuse buffers instead of allocating new ones. This is because they make it possible to reset the slice while keeping the capacity as it is(the array doesn't get cleared or collected by the GC).
+
+A buffer also offers two functions to show its underlying length and capacity. In the following example, we can see how to reuse a buffer with *Buffer.Reset*         and how to keep track of its capacity.
+
+# Peeking content
 
