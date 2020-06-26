@@ -435,3 +435,6 @@ Input management
     - os.Chdir
     
 - Child processes
+
+# Dealing with Channels and Goroutines
+> Making software concurrent can be a powerful tool in building system applications because some operations can be started even if others have not yet ended.
