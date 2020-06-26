@@ -304,4 +304,49 @@ The io.Writer interface defines one method that, given a slice of bytes, returns
 
 We can use a slice of bytes as a buffer to write information piece by piece. In the following example, we will try to combine reading from the previous section with writing, using the io.Seeker capabilities to reverse its content before writing it.
 
+# Buffers and format
+> If you have to import a package to use one function or type, you should consider just copying the necessary code into your own package. If a package contains much more than what you need, copying allows you to reduce the final size of the binary. You can also customize the code and tailor it to your needs
+
+# Efficient writing
+> Each time the os.File method, that is, Write, is executed, this translates to a system call, which is an operation that comes with some overhead.
+
+Generally speaking, it's a good idea, to minimize the number of operations by writing more data at once, thus reducing the time that's spent on such calls.
+
+The bufio.Writer struct is a writer that wraps another writer, like os.File, and executes write operations only when the buffer is full. This makes it possible to execute a forced write with the Flush method, which is generally reserved until the end of the writing processes. A good pattern of using a buffer would be the following:
+
+    var w io.WriteCloser
+    // initialise write
+    defer w.Close()
+    b := bufio.NewWriter(w)
+    defer b.Flush()
+    // write operations
+
+defer statements are executed in reverse order before returning the current function, so the first Flush ensures that whatever is still on the buffer gets written, and then Close actually closes the file. If the two operations were executed in reverse order, flush would have tried to write a closed file, returning an error, and failed to write the last chunk of information.
+
+# File modes
+> We saw that the os.OpenFile function makes it possible to choose how to open a file with the file mode, which is a uint32 where each bit has a meaning(like Unix files and folder permissions). The os package offers a series of values, each one specifying a mode, and the correct way to combine them is with | (bitwise OR).
+
+# State
+> The os package offers the FileInfo interface, which returns the metadata of a file, as shown in the following code:
+
+    type FileInfo interface {
+        Name() string
+        Size() int64
+        Mode() FileMode
+        IsDir() bool
+        Sys() interface{}
+    }
+
+The os.Stat function returns information about the file with the specified path.
+
+# Changing properties
+> In order to interact with the filesystem and change these properties, three functions are available:
+
+- func Chmod(name string, mode FileMode) error: Changes the permissions of a file
+- func Chown(name string, uid, gid int) error: Changes the owner and group of a file
+- func Chtimes(name string, atime time.Time, mtime time.Time) error: Changes the access and modification time of a file
+
+
+
+
 
