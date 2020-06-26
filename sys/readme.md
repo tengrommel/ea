@@ -346,7 +346,32 @@ The os.Stat function returns information about the file with the specified path.
 - func Chown(name string, uid, gid int) error: Changes the owner and group of a file
 - func Chtimes(name string, atime time.Time, mtime time.Time) error: Changes the access and modification time of a file
 
+# Handling Streams
+> It also focuses on the missing parts of the input and output utilities that combine them in several different ways, with the goal being to have full control of the incoming and outgoing data.
+
+# Technical requirements
+
+- Streams 
+> Writers and readers are not just for files; they are interfaces that abstract flows of data in one direction or another. These flows, often referred to as streams, are an essential part of most applications.
+
+- Input and readers
+> Incoming streams of data are considered the io.Reader interface if the application has no control over the data flow, and will wait for an error to end the process, receiving the io.EOF value in the best case scenario, which is a special error that signals that there is no more content to read, or another error otherwise. The other option is that the reader is also capable of terminating the stream. 
 
 
+Besides os.File, there are several implementations of readers spread across the standard package.
 
+# The bytes reader
+> The bytes package contains a useful structure that treats a slice of bytes as an io.Reader interface, and it implements many more I/O interfaces:
+
+- io.Reader: This can act as a regular reader
+- io.ReaderAt: This makes it possible to read from a certain position onward
+- io.WriteTo: This makes it possible to write the contents with an offset
+- io.Seeker: This can move the reader's cursor freely
+- io.ByteScanner: This can execute a read operation for each byte separately
+- io.RuneScanner: This can do the same with characters that are made of more bytes
+
+# The strings reader
+> The strings package contains another structure that is very similar to the io.Reader interface, called strings.Reader. This works exactly like the first but the underlying value is a string instead of a slice of bytes.
+
+One of the main advantages of using a string instead of the byte reader, when dealing with strings that need to be read, is the avoidance of copying the data when initializing it. This subtle difference helps with both performance and memory usage because it does fewer allocations and requires the Garbage Collector(GC) to clean up the copy.
 
