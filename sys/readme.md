@@ -293,4 +293,15 @@ The os.File structure implements this method so that it satisifes all the listed
 # Writing to file
 > As we have seen for reading, there are different ways to write files, each one with its own flaws and strengths. In the ioutil package, for instance, we have another function called WriteFile that allows us to execute the whole operation in one line. This includes opening the file, writing its contents, and then closing it.
 
+# Writer interface
+> The same principle that is valid for reading also applies for writing - there's an interface in the io package that determines writing behaviors, as shown in the following code:
+
+    type Writer interface {
+        Write(p []byte) (n int, err error)
+    }
+
+The io.Writer interface defines one method that, given a slice of bytes, returns how many of them have been written and/or if there's been any errors. A writer makes it possible to write data one chunk at a time without there being a requirement to have it all at once. The os.File struct also happens to be a writer, and can be used in such a fashion.
+
+We can use a slice of bytes as a buffer to write information piece by piece. In the following example, we will try to combine reading from the previous section with writing, using the io.Seeker capabilities to reverse its content before writing it.
+
 
