@@ -405,4 +405,9 @@ As for the reader, it is a good habit to have a constructor that accepts another
 - *bytes.Buffer
 - *strings.Builder
 
+# Understanding pseudo-terminals
 
+>Pseudo-terminals, or pseudo teletypes, are applications that run under a Terminal or teletype and emulate its behavior. It's a very convenient way of creating interactive software that is capable of running inside a Terminal without any graphical interface. This is because it uses the Terminal itself to emulate one.
+
+Input management
+> The standard input can be used to receive user commands. We can start by using a buffered input to read lines and print them. In order to read a line, there is  a useful command, bufio.Scanner, that already provides a line reader. 
