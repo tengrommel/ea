@@ -380,4 +380,29 @@ One of the main advantages of using a string instead of the byte reader, when de
 
 Let's look at a practical example. We want to implement a custom reader that takes the content from another reader and transforms it into uppercase;
 
+# output and writers
+> The reasoning that applies to incoming streams also applies to outgoing ones. We have the io.Writer interface, in which the application can only send data, and the io.WriteCloser interface, in which it is also able to close the connection.
+
+
+# The bytes writer
+> We already saw that the bytes package offers Buffer, which has both reading and writing capabilities. This implements all the methods of the ByteReader interface, plus more than one Writer interface:
+
+- io.Writer: This can act as a regular writer.
+- io.WriterAt: This makes it possible to write from a certain position onward
+- io.ByteWriter: This makes it possible to write single bytes
+
+bytes.Buffer is a very flexible structure considering that it works for both, Writer and ByteWriter and works best if reused, thanks to the Reset and Truncate methods. Instead of leaving a used buffer to be recycled by the GC and make a new buffer, it is better to reset the existing one, keeping the underlying array for the buffer and setting the slice length to 0.
+
+# The string writer
+> A byte buffer executes a copy of the bytes in order to produce a string. This is why, in version 1.10, strings.Builder made its debut.
+
+# Defining a writer
+> Any custom implementation of any writer can be defined in the application. A very common case is a decorator, which is a writer that wraps another writer and alter or extends what the original writer does.
+
+As for the reader, it is a good habit to have a constructor that accepts another writer and possibly wraps it in order to make it compatible with a lot of the strandard library structures, such as the following:
+
+- *os.File
+- *bytes.Buffer
+- *strings.Builder
+
 
