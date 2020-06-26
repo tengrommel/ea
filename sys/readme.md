@@ -264,3 +264,33 @@ The structure that allows an application to achieve this behavior is bufio.Scann
 
 We could implement a file reader that counts the number of lines with just a reader. The resulting program will try to emulate what the Unix wc -l command does.
 
+# Closer and seeker
+> There are two other interfaces that related to readers: io.Closer and io.Seeker:
+
+    type Closer interface {
+        Close() error
+    }
+    
+    type Seeker interface {
+        Seek(offset int64, whence int) (int64, error)
+    }
+
+These are usually combined with io.Reader, and the resulting interfaces are as follows:
+    
+    type ReadCloser interface {
+        Reader
+        Closer
+    }
+    type ReadSeeker interface {
+        Reader
+        Seeker
+    }
+    
+The Close method ensures that the resource gets released and avoids leaks, while the Seek method makes it possible to move the cursor of the current object(for example, a Writer) to the desired offset from the start/end of the file, or from its current position.
+
+The os.File structure implements this method so that it satisifes all the listed interfaces. It is possible to close the file when the operations are concluded, or to move the current cursor around, depending on what you are trying to achieve.
+
+# Writing to file
+> As we have seen for reading, there are different ways to write files, each one with its own flaws and strengths. In the ioutil package, for instance, we have another function called WriteFile that allows us to execute the whole operation in one line. This includes opening the file, writing its contents, and then closing it.
+
+
