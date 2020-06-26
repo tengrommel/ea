@@ -411,3 +411,27 @@ As for the reader, it is a good habit to have a constructor that accepts another
 
 Input management
 > The standard input can be used to receive user commands. We can start by using a buffered input to read lines and print them. In order to read a line, there is  a useful command, bufio.Scanner, that already provides a line reader. 
+
+# Handling Processes and Daemons
+
+# Understanding processes
+> We have already seen the importance of processes in the Unix operating system, so now we will look at how to obtain information on the current process and how to create and handle child processes
+
+- Current process
+> The Go standard library allows us to get information on the current process
+
+- Standard input
+ - PID: os.Getpid()
+ - PPID: os.Getppid()
+
+- User and group ID
+
+    - os.Getuid(): Returns the user ID of the process owner
+    - os.Getgid(): Returns the group ID of the process owner
+    - og.Getgroups(): Returns additional group IDs of the process owner
+
+- Working directory    
+    - os.Getwd 
+    - os.Chdir
+    
+- Child processes
