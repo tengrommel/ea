@@ -240,3 +240,27 @@ A buffer also offers two functions to show its underlying length and capacity. I
 
 # Peeking content
 
+Peeking is the ability to read content without advancing the reader cursor. Here, under the hood, the peeked data is strored in the buffer. Each reading operation checks whether there's data in this buffer and if there is any, that data is returned while removing it from the buffer. This works like a queue(first in first out).
+
+The possibilities that this simple operation opens are endless, and they all derive from peeking until the desired sequence of data is found, and then the interested chunk is actually read. The most common uses of this operation include the following:
+
+- The buffers keeps reading from the reader until it finds a newline character(read one line at time).
+- The same operation is used until a space is found(read one word at a time).
+
+The structure that allows an application to achieve this behavior is bufio.Scanner. This makes it possible to define what the splitting function is and has the following type: 
+
+- The buffers keeps reading from the reader until it finds a newline character(read one line at time)
+- The same operation is used until a space is found (read one word at a time)
+
+The structure that allows an application to achieve this behavior is bufio.Scanner.
+
+    type SplitFunc func(data []byte, atEOF bool) (advance int, toke []byte, err error)
+> This function stops when an error is returned, otherwise it returns the number of bytes to advance in the content, and eventually a token.
+
+- ScanBytes: Byte tokens
+- ScanRunes: Runes tokens
+- ScanWord: Words tokens
+- ScanLines: Line tokens
+
+We could implement a file reader that counts the number of lines with just a reader. The resulting program will try to emulate what the Unix wc -l command does.
+
