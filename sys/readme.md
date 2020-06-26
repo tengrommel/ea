@@ -375,3 +375,9 @@ Besides os.File, there are several implementations of readers spread across the 
 
 One of the main advantages of using a string instead of the byte reader, when dealing with strings that need to be read, is the avoidance of copying the data when initializing it. This subtle difference helps with both performance and memory usage because it does fewer allocations and requires the Garbage Collector(GC) to clean up the copy.
 
+# Defining a reader 
+> Any Go application can define a custom implementation of the *io.Reader* interface. A good general rule when implementing interface is to accept interfaces and return concrete types, avoiding unnecessary abstraction. 
+
+Let's look at a practical example. We want to implement a custom reader that takes the content from another reader and transforms it into uppercase;
+
+
