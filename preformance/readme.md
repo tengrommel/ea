@@ -67,3 +67,7 @@ Data structures and algorithms are the basic units of building software, notably
 
 - O(log n) -logarithmic time
 > Logarithmic growth is often represented as a partial sum of the harmonic series
+
+- O(n) - linear time
+> Algorithms written in linear time scale linearly with the size of their dataset.
+
