@@ -62,12 +62,15 @@ Data structures and algorithms are the basic units of building software, notably
 # Data structure operations and time complexity
 > The following diagram contains some of the common data structure operations and their time complexities.
 
-- O(1) constant time
+- O(1) - constant time
 > Algorithms written in constant time have an upper bound that does not depend on the input size of algorithm.
 
-- O(log n) -logarithmic time
+- O(log n) - logarithmic time
 > Logarithmic growth is often represented as a partial sum of the harmonic series
 
 - O(n) - linear time
 > Algorithms written in linear time scale linearly with the size of their dataset.
+
+- O(n log n) - quasilinear time
+> Algorithms written in quasilinear time are often used to order values within an array in Go
 
