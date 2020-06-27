@@ -74,3 +74,36 @@ Data structures and algorithms are the basic units of building software, notably
 - O(n log n) - quasilinear time
 > Algorithms written in quasilinear time are often used to order values within an array in Go
 
+# Insertion sort
+> Insertion sort is a sorting algorithm that constructs an array one item at a time until it results in a sorted array.
+
+    for insertionSort(data interface, a, b int) {
+        for i:=a+1;i<b;i++ {
+            for j := i; j > a && data.Less(j, j-1); j-- {
+                data.Swap(j,j-1)
+            }
+        }
+    }
+
+# Heap sort
+> Go has a built-in heapSort in the standard library, as shown in the following code snipet helps us understand that heapSort is an O(n log n) sorting algorithm.
+
+
+    func heapSort(data Interface, a, b int) {
+        first := a
+        lo := 0
+        hi := b-a
+        for i:=(hi-1)/2; i>=0; i-- {
+            siftDown(data, i, hi, first)
+        }
+        for i:=hi-1; i>=0;i-- {
+            data.Swap(first, first+i)
+            siftDown(data, lo, i, first)
+        }
+    }
+    
+# Merge sort
+> A stable sort ensures that two objects that share the same key in an input array appear in the resulting array in the same order. Stability is important if we want to make sure that a key-value order pair is organized within an array. An implementation of a stable sort can be found in the Go standard library
+
+
+# Quick sort
