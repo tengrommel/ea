@@ -59,3 +59,11 @@ Data structures and algorithms are the basic units of building software, notably
 - cpu x,y,z
 > Specify a list of GOMAXPROCS values for which the benchmarks should be executed.
 
+# Data structure operations and time complexity
+> The following diagram contains some of the common data structure operations and their time complexities.
+
+- O(1) constant time
+> Algorithms written in constant time have an upper bound that does not depend on the input size of algorithm.
+
+- O(log n) -logarithmic time
+> Logarithmic growth is often represented as a partial sum of the harmonic series
