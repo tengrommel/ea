@@ -36,3 +36,26 @@ Optimized code generally helps in many ways, including the following:
 - Higher scalability: More work can be processed within a contained system.
 
 There are many ways to service more requests within a computer system. Adding more individual computers (often referred to as horizontal scaling) or upgrading to more powerful computers (often referred to as vertical scaling) are common practices used to handle demand within a computer system. One of the fastest ways to service more requests without needing additional hardware is to increase code performance. Performance engineering acts as a way to help with both horizontal and vertical scaling. The more performant your code is, the more requests you can handle on a single machine. This pattern can potentially result in fewer or less expensive physical hosts to run your workload. This is a large value proposition for many businesses and hobbyists alike, as it helps to drive down the cost of operation and improves the end user experience.
+
+# Data Structures and Algorithms
+
+Data structures and algorithms are the basic units of building software, notably complex, performance software. Understanding them helps us think about how to impactfully organize and manipulate data in order to write effective, performant software. This chapter will include explanations of different data structures and algorithms, as well as how their Big O notation is impacted.
+
+- Understanding benchmarking
+> Metrics and measurement are at the root of optimization. The adage You can't improve what you can't measure rings true with performance. To be able to make intelligent decisions about performance optimizations, we must continuously measure the performance of the functions we are trying to optimize.
+
+# Benchmark execution
+> Benchmarks in Go use the axiom of starting with the word Benchmark(with a capital B) in the function call to denote that they are a benchmark and that they should use the benchmark functionality.
+
+- benchtime t
+> Run enough iterations of the test to take the defined t duration. Increasing this value will run more iterations of b.N.
+
+- count n
+> Run each test n times.
+
+- benchmem
+> Turn on memory profiling for your test.
+
+- cpu x,y,z
+> Specify a list of GOMAXPROCS values for which the benchmarks should be executed.
+
