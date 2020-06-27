@@ -107,3 +107,34 @@ Data structures and algorithms are the basic units of building software, notably
 
 
 # Quick sort
+
+# Understanding Concurrency
+> Iterators and generators are essential to Go. Utilizing channels and goroutines for parallelism and concurrency is idiomatic in Go and is one of the best ways to write high-performance, readable code in the language. We are going to first talk about some of the basic Go constructs in order to be able to understand how to use iterators and generators in the context of Go, followed by deep dives into the constructs of the available iterators and generators of the language.
+
+
+# Understanding closures
+> One of the most important parts of Go is that it is a language that supports first-class functions.
+
+First-class functions are functions that have the ability to be passed to other functions as variables. They can also be returned from other functions. This is important to note because we can use them as closures.
+
+*Closures are helpful because they are a great way to keep your code DRY as well as helping to isolate your data.* 
+
+Being able to isolate the data that you wish to manipulate can help you to continue to write performant code.
+
+Closures keep a local scope and have access to the outer function's scope and parameters, as well as global variables. Closures are functions that reference variables outside of their body.
+
+# Anonymous functions
+> The first step to understanding closures in Go is to understand anonymous functions. An anonymous function is created using a variable for the inception of the function. 
+
+# HTTP handles with closures
+> Closures are also commonly used as middleware in Go HTTP calls. You can wrap normal HTTP function calls around a closure in order to add additional information to your calls when you need to and reuse middleware for different functions.
+
+Using closures for Go in HTTP handlers is also convenient because they can do the following:
+
+- Isolate database information from DB calls
+- Perform authorization requests
+- Wrap other functions with isolated data(timing information, for example)
+- Communicate with other third-party services transparently with acceptable timeouts
+
+# Exploring goroutines
+> Go is a language designed with concurrency in mind. Concurrency is the ability to execute independent processes. Goroutines are a construct in Go that help with concurrency.
