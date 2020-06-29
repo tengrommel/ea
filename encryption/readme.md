@@ -57,7 +57,11 @@ DES加密
    - 两次解密
 
 - ECB - Electronic Code Book 电子密码本模式
+> 简单效率高 密文有规律，容易被破解
 - CBC - Cipher Block Chaining 密码块链模式
+> 对于最后一个明文分组必须要填充
+   - des/3des 最后一个分组填充8字节
+   - aes 最后一个分组充满16字节
 - CFB - Cipher FeedBack 密文反馈模式
 - OFB - Output FeedBack 输出反馈模式
 - CTR - CountTeR 计数器模式
