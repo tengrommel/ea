@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/aes"
 	"crypto/cipher"
 	"crypto/des"
 	"fmt"
@@ -61,6 +62,37 @@ func desDecrypt(cipherText, key []byte) []byte {
 	return plainText
 }
 
+// aes 加密 ctr 解密同一个接口
+func aesEncrypt(plainText, key []byte) []byte {
+	// 1、建一个底层使用aes的密码接口
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err)
+	}
+
+	// 2、创建一个使用ctr分组接口
+	iv := []byte("12345678abcdefgh") // 并不是初始数 可以理解为随机数种子
+	stream := cipher.NewCTR(block, iv)
+	cipherText := make([]byte, len(plainText))
+	// 3、加密
+	stream.XORKeyStream(cipherText, plainText)
+	return cipherText
+}
+
+//// aes的解密
+//func aesDecrypt(cipherText, key []byte) []byte {
+//	block, err := aes.NewCipher(key)
+//	if err != nil {
+//		panic(err)
+//	}
+//	// 2、创建一个使用ctr解密的接口
+//	iv := []byte("12345678abcdefgh")
+//	blockMode := cipher.NewCTR(block, iv)
+//	// 3、解密
+//	blockMode.XORKeyStream(cipherText, cipherText)
+//	return cipherText
+//}
+
 func main() {
 	fmt.Println("Des 加密 解密")
 	key := []byte("01234567")
@@ -68,4 +100,8 @@ func main() {
 	cipherText := desEncrypt(src, key)
 	plainText := desDecrypt(cipherText, key)
 	fmt.Printf("解密之后的数据：%s\n", string(plainText))
+	aesKey := []byte("12345678abcdefgh")
+	cipherText = aesEncrypt(src, aesKey)
+	plainText = aesEncrypt(cipherText, aesKey)
+	fmt.Printf("解密之后的数据： %s\n", string(plainText))
 }
