@@ -3,7 +3,9 @@ package main
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/sha256"
 	"crypto/x509"
+	"encoding/hex"
 	"encoding/pem"
 	"fmt"
 	"os"
@@ -97,10 +99,28 @@ func RSADecrypt(cipherText []byte, fileName string) []byte {
 	return plainText
 }
 
+// 使用sha256
+func myHash() {
+	// sha256.Sum256([]byte("hello, go"))
+	// 1、创建哈希接口对象
+	myHash := sha256.New()
+	// 2、添加数据
+	src := []byte("发的哈房间爱多少分ID撒谎发is和覅收到回复奥斯卡了合肥金卡的回复我adhfiuedhfiughdfiahseuifhdiasfhi")
+	myHash.Write(src)
+	myHash.Write(src)
+	myHash.Write(src)
+	// 3、计算结果
+	res := myHash.Sum(nil)
+	// 4、格式化为16进制形式
+	myStr := hex.EncodeToString(res)
+	fmt.Printf("%s\n", myStr)
+}
+
 func main() {
 	GenerateRsaKey(1024)
 	src := []byte("如果我死了，肯定不是自杀...")
 	cipherText := RSAEncrypt(src, "/home/teng/Documents/git/ea/public.pem")
 	plainText := RSADecrypt(cipherText, "/home/teng/Documents/git/ea/private.pem")
 	fmt.Println(string(plainText))
+	myHash()
 }
