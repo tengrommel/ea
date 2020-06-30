@@ -74,7 +74,6 @@ func RSAEncrypt(plainText []byte, fileName string) []byte {
 	}
 	return cipherText
 }
-
 func RSADecrypt(cipherText []byte, fileName string) []byte {
 	// 打开文件，并且读取文件内容
 	file, err := os.Open(fileName)
