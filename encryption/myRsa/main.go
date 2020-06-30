@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
 	"os"
 )
 
@@ -66,8 +67,8 @@ func RSAEncrypt(plainText []byte, fileName string) []byte {
 	file.Read(buf)
 	file.Close()
 	block, _ := pem.Decode(buf)
-	pubKey, err := x509.ParsePKCS1PublicKey(block.Bytes)
-	//pubKey, _ := pubInterface.(*rsa.PublicKey)
+	pubInterface, err := x509.ParsePKIXPublicKey(block.Bytes)
+	pubKey, _ := pubInterface.(*rsa.PublicKey)
 	cipherText, err := rsa.EncryptPKCS1v15(rand.Reader, pubKey, plainText)
 	if err != nil {
 		panic(err)
@@ -89,7 +90,6 @@ func RSADecrypt(cipherText []byte, fileName string) []byte {
 	file.Close()
 	block, _ := pem.Decode(buf)
 	priKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-	//pubKey, _ := pubInterface.(*rsa.PublicKey)
 	plainText, err := rsa.DecryptPKCS1v15(rand.Reader, priKey, cipherText)
 	if err != nil {
 		panic(err)
@@ -99,4 +99,8 @@ func RSADecrypt(cipherText []byte, fileName string) []byte {
 
 func main() {
 	GenerateRsaKey(1024)
+	src := []byte("如果我死了，肯定不是自杀...")
+	cipherText := RSAEncrypt(src, "/home/teng/Documents/git/ea/public.pem")
+	plainText := RSADecrypt(cipherText, "/home/teng/Documents/git/ea/private.pem")
+	fmt.Println(string(plainText))
 }
